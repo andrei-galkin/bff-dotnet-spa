@@ -1,2 +1,1 @@
-# bff auth0 dotnet spa
-Backend For Frontend Authentication Pattern with Auth0 and ASP.NET Core and SPA(Vue)
+Within this repository, you'll find a Vue Single Page Application (SPA) backed by an ASP.NET Core backend. It is designed to facilitate authentication and authorization using Auth0, employing the Backend For Frontend (BFF) pattern.
