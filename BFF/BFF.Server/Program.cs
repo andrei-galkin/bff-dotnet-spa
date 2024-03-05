@@ -41,7 +41,7 @@ builder.Services
             {
                 DateTimeOffset accessTokenExpiration = DateTimeOffset.Parse(expiresAt);
                     TimeSpan timeRemaining = accessTokenExpiration.Subtract(now);
-                    int refreshThresholdMinutes = Convert.ToInt32(configuration["Auth0:RefreshThresholdMinutes"]);
+                    int refreshThresholdMinutes = Convert.ToInt32(configuration["OIDC:RefreshThresholdMinutes"]);
                     TimeSpan refreshThreshold = TimeSpan.FromMinutes(refreshThresholdMinutes);
 
                     if (timeRemaining < refreshThreshold)
@@ -49,9 +49,9 @@ builder.Services
                         string? refreshToken = cookieCtx.Properties.GetTokenValue("refresh_token");
                         TokenResponse response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                         {
-                            Address = configuration["Auth0:TokenUrl"],
-                            ClientId = configuration["Auth0:ClientId"],
-                            ClientSecret = configuration["Auth0:ClientSecret"],
+                            Address = configuration["OIDC:TokenUrl"],
+                            ClientId = configuration["OIDC:ClientId"],
+                            ClientSecret = configuration["OIDC:ClientSecret"],
                             RefreshToken = refreshToken
                         });
 
@@ -71,7 +71,7 @@ builder.Services
             }
         };
     })
-    .AddOpenIdConnect("Auth0", options => ConfigureOpenIdConnect(options, configuration));
+    .AddOpenIdConnect("OIDC", options => ConfigureOpenIdConnect(options, configuration));
 
 builder.Services.AddHttpClient();
 
@@ -95,24 +95,30 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller}/{action=Index}/{id?}");
 
-app.MapFallbackToFile("/index.html");
+app.MapFallbackToFile("index.html");
 
 app.Run();
 
 static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration configuration)
 {
-    // Set the authority to your Auth0 domain
-    options.Authority = configuration["Auth0:Domain"];
-    options.MetadataAddress = configuration["Auth0:MetadataAddress"];
+    // Set the authority to your OIDC domain
+    options.Authority = configuration["OIDC:Domain"];
+    options.MetadataAddress = configuration["OIDC:MetadataAddress"];
 
-    // Configure the Auth0 Client ID and Client Secret
-    options.ClientId = configuration["Auth0:ClientId"];
-    options.ClientSecret = configuration["Auth0:ClientSecret"];
+    // Configure the OIDC Client ID and Client Secret
+    options.ClientId = configuration["OIDC:ClientId"];
+    options.ClientSecret = configuration["OIDC:ClientSecret"];
 
     // Set response type to code
     options.ResponseType = OpenIdConnectResponseType.Code;
@@ -121,14 +127,14 @@ static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration 
 
     // Configure the scope
     options.Scope.Clear();
-    options.Scope.Add("openid");
+    options.Scope.Add("email");
     options.Scope.Add("profile");
+    options.Scope.Add("openid");
 
-    // Set the callback path for SAS IDP
     options.CallbackPath = new PathString("/callback");
 
-    // Configure the Claims Issuer to be Auth0
-    options.ClaimsIssuer = "Auth0";
+    // Configure the Claims Issuer to be OIDC
+    options.ClaimsIssuer = "OIDC";
 
     options.SaveTokens = true;
 
@@ -137,7 +143,7 @@ static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration 
         // handle the logout redirection
         OnRedirectToIdentityProviderForSignOut = (context) =>
         {
-            var logoutUri = configuration["Auth0:LogoutUri"];
+            var logoutUri = configuration["OIDC:LogoutUri"];
 
             var postLogoutUri = context.Properties.RedirectUri;
             if (!string.IsNullOrEmpty(postLogoutUri))
@@ -158,7 +164,7 @@ static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration 
         OnRedirectToIdentityProvider = context =>
         {
             // Set Audience
-            context.ProtocolMessage.SetParameter("audience", configuration["Auth0:ApiAudience"]);
+            context.ProtocolMessage.SetParameter("audience", configuration["OIDC:ApiAudience"]);
             return Task.CompletedTask;
         }
     };
