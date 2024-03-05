@@ -41,7 +41,7 @@ builder.Services
             {
                 DateTimeOffset accessTokenExpiration = DateTimeOffset.Parse(expiresAt);
                     TimeSpan timeRemaining = accessTokenExpiration.Subtract(now);
-                    int refreshThresholdMinutes = Convert.ToInt32(configuration["OIDC:RefreshThresholdMinutes"]);
+                    int refreshThresholdMinutes = Convert.ToInt32(configuration["oauth2:RefreshThresholdMinutes"]);
                     TimeSpan refreshThreshold = TimeSpan.FromMinutes(refreshThresholdMinutes);
 
                     if (timeRemaining < refreshThreshold)
@@ -49,9 +49,9 @@ builder.Services
                         string? refreshToken = cookieCtx.Properties.GetTokenValue("refresh_token");
                         TokenResponse response = await new HttpClient().RequestRefreshTokenAsync(new RefreshTokenRequest
                         {
-                            Address = configuration["OIDC:TokenUrl"],
-                            ClientId = configuration["OIDC:ClientId"],
-                            ClientSecret = configuration["OIDC:ClientSecret"],
+                            Address = configuration["oauth2:TokenUrl"],
+                            ClientId = configuration["oauth2:ClientId"],
+                            ClientSecret = configuration["oauth2:ClientSecret"],
                             RefreshToken = refreshToken
                         });
 
@@ -71,7 +71,7 @@ builder.Services
             }
         };
     })
-    .AddOpenIdConnect("OIDC", options => ConfigureOpenIdConnect(options, configuration));
+    .AddOpenIdConnect("oauth2", options => ConfigureOpenIdConnect(options, configuration));
 
 builder.Services.AddHttpClient();
 
@@ -112,13 +112,13 @@ app.Run();
 
 static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration configuration)
 {
-    // Set the authority to your OIDC domain
-    options.Authority = configuration["OIDC:Domain"];
-    options.MetadataAddress = configuration["OIDC:MetadataAddress"];
+    // Set the authority to your oauth2 domain
+    options.Authority = configuration["oauth2:Domain"];
+    options.MetadataAddress = configuration["oauth2:MetadataAddress"];
 
-    // Configure the OIDC Client ID and Client Secret
-    options.ClientId = configuration["OIDC:ClientId"];
-    options.ClientSecret = configuration["OIDC:ClientSecret"];
+    // Configure the oauth2 Client ID and Client Secret
+    options.ClientId = configuration["oauth2:ClientId"];
+    options.ClientSecret = configuration["oauth2:ClientSecret"];
 
     // Set response type to code
     options.ResponseType = OpenIdConnectResponseType.Code;
@@ -133,8 +133,8 @@ static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration 
 
     options.CallbackPath = new PathString("/callback");
 
-    // Configure the Claims Issuer to be OIDC
-    options.ClaimsIssuer = "OIDC";
+    // Configure the Claims Issuer to be oauth2
+    options.ClaimsIssuer = "oauth2";
 
     options.SaveTokens = true;
 
@@ -143,7 +143,7 @@ static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration 
         // handle the logout redirection
         OnRedirectToIdentityProviderForSignOut = (context) =>
         {
-            var logoutUri = configuration["OIDC:LogoutUri"];
+            var logoutUri = configuration["oauth2:LogoutUri"];
 
             var postLogoutUri = context.Properties.RedirectUri;
             if (!string.IsNullOrEmpty(postLogoutUri))
@@ -164,7 +164,7 @@ static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration 
         OnRedirectToIdentityProvider = context =>
         {
             // Set Audience
-            context.ProtocolMessage.SetParameter("audience", configuration["OIDC:ApiAudience"]);
+            context.ProtocolMessage.SetParameter("audience", configuration["oauth2:ApiAudience"]);
             return Task.CompletedTask;
         }
     };
