@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BFF.Server", "BFF.Server\BFF.Server.csproj", "{A43A22D5-0B21-4E68-AB7C-17D30656268F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BFF.Server", "BFF.Server\BFF.Server.csproj", "{A43A22D5-0B21-4E68-AB7C-17D30656268F}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "bff.client", "bff.client\bff.client.esproj", "{0E6BD187-EC8E-4C0E-84C8-25DE6D6EE7D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast", "WeatherForecast\WeatherForecast.csproj", "{5C167304-BA15-4A87-8307-DA1A33A1D32F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{0E6BD187-EC8E-4C0E-84C8-25DE6D6EE7D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E6BD187-EC8E-4C0E-84C8-25DE6D6EE7D4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0E6BD187-EC8E-4C0E-84C8-25DE6D6EE7D4}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5C167304-BA15-4A87-8307-DA1A33A1D32F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C167304-BA15-4A87-8307-DA1A33A1D32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C167304-BA15-4A87-8307-DA1A33A1D32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C167304-BA15-4A87-8307-DA1A33A1D32F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
