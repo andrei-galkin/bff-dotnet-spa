@@ -2,8 +2,7 @@
 
 namespace Api.Authorization
 {
-    public class ScopeHandler :
-             AuthorizationHandler<ScopeRequirement>
+    public class ScopeHandler : AuthorizationHandler<ScopeRequirement>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ScopeRequirement requirement)
         {
@@ -12,13 +11,14 @@ namespace Api.Authorization
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var list = context.User.Claims.Select(c => c.Type == "scope").ToList();
+            var scope = "http://schemas.microsoft.com/identity/claims/scope";
 
-            var success = context.User.Claims.Any(c => c.Type == "scope" &&
-                c.Value.Contains(requirement.Scope));
+            var success = context.User.Claims.Any(c => c.Type == scope &&  c.Value.Contains(requirement.Scope));
 
             if (success)
+            {
                 context.Succeed(requirement);
+            }
 
             return Task.CompletedTask;
         }

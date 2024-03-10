@@ -9,14 +9,14 @@ namespace BFF.Server.Controllers
     [Route("[controller]")]
     public class AuthController : Controller
     {
-        [Route("/Auth/Login")]
+        [Route("/Account/Login")]
         public ActionResult Login(string returnUrl = "/")
         {
             return new ChallengeResult("OAuth2", new AuthenticationProperties() { RedirectUri = returnUrl });
         }
 
         [Authorize]
-        [Route("/Auth/Logout")]
+        [Route("/Account/Logout")]
         public async Task<ActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
@@ -27,7 +27,7 @@ namespace BFF.Server.Controllers
             });
         }
 
-        [Route("/Auth/User")]
+        [Route("/Account/User")]
         public ActionResult GetUser()
         {
             if (User.Identity.IsAuthenticated)

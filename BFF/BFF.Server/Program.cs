@@ -113,7 +113,7 @@ app.Run();
 static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration configuration)
 {
     // Set the authority to your OAuth2 domain
-    options.Authority = configuration["OAuth2:Domain"];
+    options.Authority = configuration["OAuth2:AuthorizeUrl"];
     options.MetadataAddress = configuration["OAuth2:MetadataAddress"];
 
     // Configure the OAuth2 Client ID and Client Secret
@@ -127,9 +127,10 @@ static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration 
 
     // Configure the scope
     options.Scope.Clear();
-    options.Scope.Add("email");
-    options.Scope.Add("profile");
     options.Scope.Add("openid");
+    options.Scope.Add("offline_access");
+    options.Scope.Add("read:weather");
+
 
     options.CallbackPath = new PathString("/callback");
 
@@ -164,7 +165,7 @@ static void ConfigureOpenIdConnect(OpenIdConnectOptions options, IConfiguration 
         OnRedirectToIdentityProvider = context =>
         {
             // Set Audience
-            context.ProtocolMessage.SetParameter("audience", configuration["OAuth2:ApiAudience"]);
+            context.ProtocolMessage.SetParameter("audience", configuration["OAuth2:Audience"]);
             return Task.CompletedTask;
         }
     };
